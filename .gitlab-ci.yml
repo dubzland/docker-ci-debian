@@ -1,11 +1,12 @@
 ---
-image: docker:19.03.1
+image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:20.10
 
 services:
-  - docker:19.03.1-dind
+  - name: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/docker:20.10-dind
+    alias: docker
 
 before_script:
-  - echo -n $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+  - echo -n $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
   - echo -n $DOCKER_REGISTRY_PASSWORD | docker login -u $DOCKER_REGISTRY_USER --password-stdin $DOCKER_REGISTRY
 
 variables:
@@ -18,12 +19,26 @@ build:
       docker build
       --pull
       --build-arg BUILDKIT_INLINE_CACHE=1
-      --cache-from $CI_REGISTRY_IMAGE:latest
+      --cache-from $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
       --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
       .
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
 
-push:
+push-branch:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $DOCKER_REGISTRY/$DOCKER_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker push $DOCKER_REGISTRY/$DOCKER_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+  except:
+    refs:
+      - main
+
+push-latest:
   stage: deploy
   variables:
     GIT_STRATEGY: none
@@ -32,6 +47,7 @@ push:
     - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:latest
     - docker push $CI_REGISTRY_IMAGE:latest
     - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $DOCKER_REGISTRY/$DOCKER_REGISTRY_IMAGE:latest
-    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $DOCKER_REGISTRY/$DOCKER_REGISTRY_IMAGE:stable
     - docker push $DOCKER_REGISTRY/$DOCKER_REGISTRY_IMAGE:latest
-    - docker push $DOCKER_REGISTRY/$DOCKER_REGISTRY_IMAGE:stable
+  only:
+    refs:
+      - main
