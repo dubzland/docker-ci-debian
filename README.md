@@ -1,5 +1,5 @@
 # Debian based image for Ansible CI testing.
-[![Gitlab pipeline status (self-hosted)](https://git.dubzland.net/dubzland/docker-ci-debian/badges/buster-slim/pipeline.svg)](https://git.dubzland.net/dubzland/docker-ci-debian)
+[![Gitlab pipeline status (self-hosted)](https://git.dubzland.net/dubzland/docker-ci-debian/badges/bullseye-slim/pipeline.svg)](https://git.dubzland.net/dubzland/docker-ci-debian)
 [![Docker pulls](https://img.shields.io/docker/pulls/jdubz/docker-ci-debian.svg?maxAge=2592000)](https://hub.docker.com/r/jdubz/docker-ci-debian/)
 [![Liberapay patrons](https://img.shields.io/liberapay/patrons/jdubz)](https://liberapay.com/jdubz/donate)
 [![Liberapay receiving](https://img.shields.io/liberapay/receives/jdubz)](https://liberapay.com/jdubz/donate)
@@ -14,7 +14,8 @@ mounts:
 
 ## Tags
 
-- [buster-slim,latest](https://git.dubzland.net/dubzland/docker-ci-debian/blob/buster-slim/Dockerfile)
+- [bullseye-slim,latest](https://git.dubzland.net/dubzland/docker-ci-debian/blob/bullseye-slim/Dockerfile)
+- [buster-slim](https://git.dubzland.net/dubzland/docker-ci-debian/blob/buster-slim/Dockerfile)
 - [stretch-slim](https://git.dubzland.net/dubzland/docker-ci-debian/blob/stretch-slim/Dockerfile)
 
 ## License
